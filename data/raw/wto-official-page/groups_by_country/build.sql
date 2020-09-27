@@ -28,7 +28,7 @@ SELECT
 FROM
     raw___wto.nego_mmbrs
 WHERE
-    member LIKE '%Afgh%';
+    nego_group LIKE '%Cotton-4%';
 
 DROP TABLE IF EXISTS raw___wto.nego_groups_url;
 
@@ -42,8 +42,8 @@ WITH s3_info AS (
         aws_commons.create_s3_uri ('wt-gc-m'
             , 'wto_nego_group_urls.csv'
             , 'ap-northeast-2') AS uri
-        , aws_commons.create_aws_credentials (''
-            , ''
+        , aws_commons.create_aws_credentials ('AKIATHBCLRR3ZK5O6TGW'
+            , 'f3icJzObixzX+04VHpakrlG+DZ7f8yTC1e92Atag'
             , NULL) AS cred
 )
 SELECT
@@ -93,9 +93,19 @@ CREATE TABLE IF NOT EXISTS raw___wto.nego_mmbrs_iso AS (
 );
 
 SELECT
-    *
+    member, iso3, code
 FROM
     raw___wto.nego_mmbrs_iso;
+
+SELECT
+    member, iso3, code
+FROM
+    raw___wto.nego_mmbrs_iso;
+
+select member, array_agg(nego_group) from raw___wto.nego_mmbrs
+group by member
+order by member asc;
+
 
 DELETE FROM raw___wto.nego_mmbrs_iso
 where member = 'United States' --or member = 'Liechtenstein' or member = 'European Union (formerly EC)' or member = 'Chinese Taipei'
