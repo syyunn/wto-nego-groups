@@ -56,8 +56,55 @@ SELECT
 FROM
     raw___wto.nego_groups_url;
 
-SELECT
-    distinct nego_group, count(*) over (partition by nego_group)
+SELECT DISTINCT
+    nego_group
+    , count(*) OVER (PARTITION BY nego_group)
 FROM
     raw___wto.nego_mmbrs
-order by count desc;
+ORDER BY
+    count DESC;
+
+SELECT
+    *
+FROM
+    raw___wto.nego_mmbrs
+WHERE
+    nego_group LIKE '%Cotton-4%';
+
+SELECT DISTINCT
+    member
+    , iso3
+    , code
+FROM
+    raw___wto.nego_mmbrs AS mmbrs
+    INNER JOIN raw___wto.iso_3166 ON mmbrs.member = name;
+
+DROP TABLE IF EXISTS raw___wto.nego_mmbrs_iso;
+
+CREATE TABLE IF NOT EXISTS raw___wto.nego_mmbrs_iso AS (
+    SELECT DISTINCT ON (member)
+        member , name , sim -- by using "distinct on" with "order by", we can get the best matching .
+        , iso3 , iso2 , code
+    FROM
+        raw___wto.nego_mmbrs mmbrs , raw___wto.iso_3166 iso , similarity (mmbrs.member , iso.name
+) AS sim
+    ORDER BY
+        member , sim DESC
+);
+
+SELECT
+    *
+FROM
+    raw___wto.nego_mmbrs_iso;
+
+DELETE FROM raw___wto.nego_mmbrs_iso
+where member = 'United States' --or member = 'Liechtenstein' or member = 'European Union (formerly EC)' or member = 'Chinese Taipei'
+
+INSERT INTO raw___wto.nego_mmbrs_iso VALUES
+    ('Chinese Taipei', 'Taiwan, Republic of China', NULL, 'TWN', 'TW', '158');
+
+INSERT INTO raw___wto.nego_mmbrs_iso VALUES
+    ('Liechtenstein', 'Liechtenstein', NULL, 'LIE', 'LI', '438');
+
+INSERT INTO raw___wto.nego_mmbrs_iso VALUES
+    ('United States', 'United States of America', NULL, 'USA', 'US', '840');
