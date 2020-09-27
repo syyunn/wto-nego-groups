@@ -12,3 +12,6 @@ Product-level analysis on WTO negotiating groups
 
 ## Planning of Experiment
 - Choose looks-like-most-different two groups
+
+## Expected Functionality of The Research
+- Provide analytic solution for the Deadlock in Multilateral Negotiation
